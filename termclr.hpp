@@ -38,7 +38,7 @@ namespace termclr {
   namespace detail {
   }
 
-  inline std::ostream& reset_all(std::ostream& stream)
+  inline std::ostream& reset(std::ostream& stream)
   {
     #if defined(TERM_MAC) || defined(TERM_NIX)
       stream << "\u001b[0m";
@@ -47,11 +47,6 @@ namespace termclr {
     #endif
 
     return stream;
-  }
-
-  inline std::ostream& reset(std::ostream& stream)
-  {
-    // TODO: lookup ostream private storage
   }
 
   inline std::ostream& bold(std::ostream& stream)
@@ -193,22 +188,22 @@ namespace termclr {
 
   inline std::ostream& blue(std::ostream& stream)
   {
-#if defined(TERM_MAC) || defined(TERM_NIX)
-    stream << "\u001b[34m";
-#elif defined(TERM_WIN)
-    // TODO: windows
-#endif
+    #if defined(TERM_MAC) || defined(TERM_NIX)
+      stream << "\u001b[34m";
+    #elif defined(TERM_WIN)
+      // TODO: windows
+    #endif
 
     return stream;
   }
 
   inline std::ostream& magenta(std::ostream& stream)
   {
-#if defined(TERM_MAC) || defined(TERM_NIX)
-    stream << "\u001b[35m";
-#elif defined(TERM_WIN)
-    // TODO: windows
-#endif
+    #if defined(TERM_MAC) || defined(TERM_NIX)
+      stream << "\u001b[35m";
+    #elif defined(TERM_WIN)
+      // TODO: windows
+    #endif
 
     return stream;
   }
@@ -224,7 +219,7 @@ namespace termclr {
     return stream;
   }
 
-  inline std::ostream& silver(std::ostream& stream)
+  inline std::ostream& white(std::ostream& stream)
   {
     #if defined(TERM_MAC) || defined(TERM_NIX)
       stream << "\u001b[37m";
@@ -246,7 +241,7 @@ namespace termclr {
     return stream;
   }
 
-    inline std::ostream& light_red(std::ostream& stream)
+  inline std::ostream& light_red(std::ostream& stream)
   {
     #if defined(TERM_MAC) || defined(TERM_NIX)
       stream << "\u001b[91m";
@@ -301,7 +296,7 @@ namespace termclr {
     return stream;
   }
 
-  inline std::ostream& turquoise(std::ostream& stream)
+  inline std::ostream& light_cyan(std::ostream& stream)
   {
     #if defined(TERM_MAC) || defined(TERM_NIX)
       stream << "\u001b[96m";
@@ -312,7 +307,7 @@ namespace termclr {
     return stream;
   }
 
-  inline std::ostream& white(std::ostream& stream)
+  inline std::ostream& bright_white(std::ostream& stream)
   {
     #if defined(TERM_MAC) || defined(TERM_NIX)
       stream << "\u001b[97m";
@@ -400,7 +395,7 @@ namespace termclr {
     return stream;
   }
 
-  inline std::ostream& on_silver(std::ostream& stream)
+  inline std::ostream& on_white(std::ostream& stream)
   {
     #if defined(TERM_MAC) || defined(TERM_NIX)
       stream << "\u001b[47m";
@@ -488,7 +483,7 @@ namespace termclr {
     return stream;
   }
 
-  inline std::ostream& on_white(std::ostream &stream)
+  inline std::ostream& on_bright_white(std::ostream &stream)
   {
     #if defined(TERM_MAC) || defined(TERM_NIX)
       stream << "\u001b[107m";
@@ -500,7 +495,6 @@ namespace termclr {
   }
 
 }
-
 
 #undef TERM_WIN
 #undef TERM_NIX
