@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <cstdlib>
 #include "../termclr.hpp"
 
@@ -6,6 +8,9 @@
 int main(int argc, char **argv)
 {
   using namespace termclr;
+  std::ofstream out("out.txt");
+  std::cout.rdbuf(out.rdbuf());
+
   std::cout << black      << "black   text 30" << reset << std::endl;
   std::cout << red        << "red     text 31" << reset << std::endl;
   std::cout << green      << "green   text 32" << reset << std::endl;
@@ -49,6 +54,16 @@ int main(int argc, char **argv)
   std::cout << inverse    << "inverse    text 7" << reset << std::endl;
   std::cout << conceal    << "conceal    text 8" << reset << std::endl;
   std::cout << crossedout << "crossedout text 9" << reset << std::endl;
+
+  std::cerr << light_blue << on_magenta << "Bonjour!!!" << std::endl;
+
+  std::stringstream str;
+  str << italic << cyan << "italic cyan" << reset << std::endl;
+  std::ofstream file;
+  file.open("output.txt", std::ofstream::out | std::ofstream::app);
+  file << str.str();
+  file.close();
+  std::cout << str.str() << std::endl;
 
   /*
   char* term = getenv("TERM");
