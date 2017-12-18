@@ -1,11 +1,9 @@
 /**
  * termclr.hpp
  *
- * Termclr is for coloring the text printed on terminal.
- *
  * Copyright (c) 2017 by CHEN Yang
  *
- * License: BSD
+ * License: BSD-3
  */
 
 #ifndef TERMCLR_HPP
@@ -32,6 +30,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <streambuf>
 #include <cstdio>
 
 namespace termclr {
@@ -85,6 +84,10 @@ namespace termclr {
 
     inline bool is_atty(const std::ostream& stream)
     {
+      if (typeid(stream) == typeid(std::fstream) ||
+          typeid(stream) == typeid(std::stringstream))
+        return false;
+
       #if defined(TERM_MAC) || defined(TERM_NIX)
         if (&stream == &std::cout)
           return static_cast<bool>(isatty(fileno(isatty(stdout))));
@@ -98,24 +101,29 @@ namespace termclr {
       #endif
     }
 
-    #define COLOR_FUNCTION(COLOR, SIZE)                   \
+    #define COLOR_FUNCTION(COLOR)                         \
     inline std::ostream& (COLOR)(std::ostream& stream) {  \
       if (detail::is_atty(stream)) {                      \
         detail::enable_seq_char(stream);                  \
         stream << detail::_##COLOR;                       \
-      }
+      }                                                   \
       return stream;                                      \
     }                                                     \
                                                           \
     template <typename T>                                 \
     inline std::string (COLOR)(const T str) {             \
       std::string out(detail::_##COLOR);                  \
-      return out.append(str).append(detail::_reset)       \
+      return out.append(str).append(detail::_reset);      \
     }
 
     #if defined(TERM_WIN)
     inline void enable_seq_char(std::ostream& stream)
     {
+      static bool enabled = false;
+
+      if (enabled)
+        return;
+
       HANDLE handle = INVALID_HANDLE_VALUE;
       if (&stream == &std::cout)
         handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -131,6 +139,8 @@ namespace termclr {
       dw_mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
       if (!SetConsoleMode(handle, dw_mode))
         return;
+
+      enabled = true;
     }
     #endif
   }
@@ -180,542 +190,6 @@ namespace termclr {
   COLOR_FUNCTION(on_light_magenta)
   COLOR_FUNCTION(on_light_cyan)
   COLOR_FUNCTION(on_bright_white)
-
-  /*
-  inline std::ostream& reset(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[0m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& bold(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[1m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& dim(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[2m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& italic(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[3m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& underline(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[4m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& blink(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[5m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& inverse(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[7m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& conceal(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[8m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& crossedout(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[9m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& black(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[30m";
-      #elif defined(TERM_WIN)
-      // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& red(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[31m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& green(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[32m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& yellow(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[33m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& blue(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[34m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& magenta(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[35m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& cyan(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[36m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& white(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[37m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& grey(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[90m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& light_red(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[91m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& light_green(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[92m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& light_yellow(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[93m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& light_blue(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[94m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& light_magenta(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[95m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& light_cyan(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[96m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& bright_white(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[97m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_black(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[40m";
-      #elif defined(TERM_WIN)
-      // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_red(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[41m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_green(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[42m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_yellow(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[43m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_blue(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[44m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_magenta(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[45m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_cyan(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[46m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_white(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[47m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_grey(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[100m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_light_red(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[101m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_light_green(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[102m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_light_yellow(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[103m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_light_blue(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[104m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_light_magenta(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[105m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_light_cyan(std::ostream& stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[106m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-
-  inline std::ostream& on_bright_white(std::ostream &stream)
-  {
-    if (detail::is_atty(stream)) {
-      #if defined(TERM_MAC) || defined(TERM_NIX)
-        stream << "\u001b[107m";
-      #elif defined(TERM_WIN)
-        // TODO: windows
-      #endif
-    }
-
-    return stream;
-  }
-  */
-
 }
 
 #undef TERM_WIN
