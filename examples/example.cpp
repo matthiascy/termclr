@@ -51,7 +51,7 @@ int main(int argc, char **argv)
   std::cout << termclr::crossedout << "crossedout text 9" << termclr::reset << std::endl;
 
   std::stringstream str;
-  str << termclr::italic << termclr::on_cyan << "italic text on cyan from " << termclr::reset << std::endl;
+  str << termclr::italic << termclr::on_cyan << "italic text on cyan from stringstream" << termclr::reset << std::endl;
   std::cout << str.str() << std::endl;
   std::ofstream out_file("out.txt", std::ios::app);
   out_file << str.str();

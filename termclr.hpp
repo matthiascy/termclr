@@ -90,9 +90,9 @@ namespace termclr {
 
       #if defined(TERM_MAC) || defined(TERM_NIX)
         if (&stream == &std::cout)
-          return static_cast<bool>(isatty(fileno(isatty(stdout))));
+          return static_cast<bool>(isatty(fileno(stdout)));
         else if ((&stream == &std::cerr) || (&stream == &std::clog))
-          return static_cast<bool>(isatty(fileno(isatty(stderr))));
+          return static_cast<bool>(isatty(fileno(stderr)));
       #elif defined(TERM_WIN)
         if (&stream == &std::cout)
           return static_cast<bool>(_isatty(_fileno(stdout)));
@@ -142,6 +142,8 @@ namespace termclr {
 
       enabled = true;
     }
+    #else
+    inline void enable_seq_char(std::ostream& stream) { }
     #endif
   }
 
