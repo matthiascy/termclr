@@ -1,71 +1,114 @@
-# termclr
+# Termclr
 
-# Part of ANSI escape sequences
+`Termclr` is a header-only C++ library which provides a set of C++ stream manipulators to print colored text to terminal.
 
-## Set
+Thanks to [ANSI escape code](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors), terminals can display colors and formatted texts, there is a detailed explanation [here](https://misc.flogisoft.com/bash/tip_colors_and_formatting). For Unix-like systems, escape codes are naturally supported in terminals, but for Windows, it works only when [virtual terminal processing](https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#Text_Formatting) is enabled. Depends on different type of terminals, some formatting codes may not work, see [terminals compatibility](https://misc.flogisoft.com/bash/tip_colors_and_formatting#Terminals-compatibility) for more infomation. On Windows, the only two supported formatting codes are `underline` and `inverse`(swaps foreground and background colors).
 
-Bold/bright: \u001b[1m
-Dim:         \u001b[2m
-Italic:      \u001b[3m
-Underline:   \u001b[4m
-Blink:       \u001b[5m
-Inverse:     \u001b[7m
-Conceal:      \u001b[8m
-Crossed-out: \u001b[9m
-    
-## Reset
+## How to use ?
 
-All:         \u001b[0m
-Bold/bright: \u001b[21m
-Dim:         \u001b[22m
-Italic:      \u001b[23m
-Underline:   \u001b[24m
-Blink:       \u001b[25m
-Inverse:     \u001b[27m
-Conceal:     \u001b[28m
-Crossed-out: \u001b[29m
+Basically, you put the color/format manipulators
 
-## Colors
+```c++
+#include <iostream>
+#include "termclr.hpp"
 
-### Forground:
+int main(int argc, char** argv)
+{
+    std::cout << termclr::light_cyan << "Dyed in bright cyan."
+              << termclr::reset << std::endl;
 
-Black:   \u001b[30m
-Red:     \u001b[31m
-Green:   \u001b[32m
-Yellow:  \u001b[33m
-Blue:    \u001b[34m
-Magenta: \u001b[35m
-Cyan:    \u001b[36m
-White:   \u001b[37m
-Default: \u001b[39m
+    std::cout << termclr::light_magenta("Dyed in light_magenta.")
+              << std::endl;
 
-BrightBlack:   \u001b[90m
-BrightRed:     \u001b[91m
-BrightGreen:   \u001b[92m
-BrightYellow:  \u001b[93m
-BrightBlue:    \u001b[94m
-BrightMagenta: \u001b[95m
-BrightCyan:    \u001b[96m
-BrightWhite:   \u001b[97m
+    std::cout << termclr::light_red << termclr::on_grey << "Bright red text on grey."
+              << std::endl;
 
-### Background
+    return 0;
+}
+```
 
-Black:   \u001b[40m
-Red:     \u001b[41m
-Green:   \u001b[42m
-Yellow:  \u001b[43m
-Blue:    \u001b[44m
-Magenta: \u001b[45m
-Cyan:    \u001b[46m
-White:   \u001b[47m
-Default: \u001b[49m
+Termclr provides a manipulator and a function to color the text.
 
-BrightBlack:   \u001b[100m
-BrightRed:     \u001b[101m
-BrightGreen:   \u001b[102m
-BrightYellow:  \u001b[103m
-BrightBlue:    \u001b[104m
-BrightMagenta: \u001b[105m
-BrightCyan:    \u001b[106m
-BrightWhite:   \u001b[107m
-   
+```c++
+std::cout << termclr::blue("Hues of blue include indigo and ultramarine.");
+```
+
+or
+
+```c++
+std::cout << termclr::blue << "Hues of blue include indigo and ultramarine." << termclr::reset;
+```
+
+Noticed that, the function version will automatically add a `reset` manipulator at the end of the string but the manipulator itself doesn't, so you need to add `termclr::reset` manually to avoid that color will affect the following texts.
+
+When `cout` or `cerr` is redirected to a file or a buffer, or output stream is a file or a string, if manipulators are used(not include function version of colors), escape codes will be ignored automatically.
+
+```c++
+std::stringstream str_stream;
+str_stream << termclr::light_green << "un grand arbre vert" << termclr::reset;
+std::cout << str_stream.str();
+```
+will print "un grand arbre vert" but not a blue string. Actually, the function version of colors only create a string with head be the desired color codes and tail be the reset codes.
+
+```c++
+std::stringstream str_stream;
+str_stream << termclr::light_red("Pay attention please!");
+std::cout << str_stream.str();
+```
+*will print "Pay attention please!" in bright red*.
+
+## Available manipulators
+
++ [Formatting](#formatting)
++ [Foreground Color](#foreground-color)
++ [Background Color](#background-color)
+
+### Formatting
+
+- `termclr::reset`
+- `termclr::bold`
+- `termclr::dim`
+- `termclr::italic`
+- `termclr::underline`
+- `termclr::blink`
+- `termclr::inverse`
+- `termclr::conceal`
+- `termclr::crossedout`
+
+### Foreground color
+
+- `termclr::black`
+- `termclr::red`
+- `termclr::green`
+- `termclr::yellow`
+- `termclr::blue`
+- `termclr::magenta`
+- `termclr::cyan`
+- `termclr::white`
+- `termclr::grey`
+- `termclr::light_red`
+- `termclr::light_green`
+- `termclr::light_yellow`
+- `termclr::light_blue`
+- `termclr::light_magenta`
+- `termclr::light_cyan`
+- `termclr::bright_white`
+
+### Background color
+
+- `termclr::on_black`
+- `termclr::on_red`
+- `termclr::on_green`
+- `termclr::on_yellow`
+- `termclr::on_blue`
+- `termclr::on_magenta`
+- `termclr::on_cyan`
+- `termclr::on_white`
+- `termclr::on_grey`
+- `termclr::on_light_red`
+- `termclr::on_light_green`
+- `termclr::on_light_yellow`
+- `termclr::on_light_blue`
+- `termclr::on_light_magenta`
+- `termclr::on_light_cyan`
+- `termclr::on_bright_white`
