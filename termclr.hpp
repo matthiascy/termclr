@@ -117,33 +117,33 @@ namespace termclr {
     }
 
     #if defined(TERM_WIN)
-    inline void enable_seq_char(std::ostream& stream)
-    {
-      static bool enabled = false;
+      inline void enable_seq_char(std::ostream& stream)
+      {
+        static bool enabled = false;
 
-      if (enabled)
-        return;
+        if (enabled)
+          return;
 
-      HANDLE handle = INVALID_HANDLE_VALUE;
-      if (&stream == &std::cout)
-        handle = GetStdHandle(STD_OUTPUT_HANDLE);
-      else if (&stream == &std::cerr || &stream == &std::clog)
-        handle = GetStdHandle(STD_ERROR_HANDLE);
-      else
-        return;
+        HANDLE handle = INVALID_HANDLE_VALUE;
+        if (&stream == &std::cout)
+          handle = GetStdHandle(STD_OUTPUT_HANDLE);
+        else if (&stream == &std::cerr || &stream == &std::clog)
+          handle = GetStdHandle(STD_ERROR_HANDLE);
+        else
+          return;
 
-      DWORD dw_mode = 0;
-      if (!GetConsoleMode(handle, &dw_mode))
-        return;
+        DWORD dw_mode = 0;
+        if (!GetConsoleMode(handle, &dw_mode))
+          return;
 
-      dw_mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-      if (!SetConsoleMode(handle, dw_mode))
-        return;
+        dw_mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+        if (!SetConsoleMode(handle, dw_mode))
+          return;
 
-      enabled = true;
-    }
+        enabled = true;
+      }
     #else
-    inline void enable_seq_char(std::ostream& stream) { }
+      inline void enable_seq_char(std::ostream& stream) { }
     #endif
   }
 
