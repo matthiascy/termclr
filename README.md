@@ -39,7 +39,7 @@ or
 std::cout << termclr::blue << "Hues of blue include indigo and ultramarine." << termclr::reset;
 ```
 
-Noticed that, the function version will automatically add a `reset` manipulator at the end of the string but the manipulator itself doesn't, so you need to add `termclr::reset` manually to avoid that color won't affect the following texts.
+Noticed that, the function version will automatically add a `reset` manipulator at the end of the string but the manipulator itself doesn't, so you need to add `termclr::reset` manually to avoid that color will affect the following texts.
 
 When `cout` or `cerr` is redirected to a file or a buffer, or output stream is a file or a string, if manipulators are used(not include function version of colors), escape codes will be ignored automatically.
 
@@ -60,8 +60,8 @@ std::cout << str_stream.str();
 ## Available manipulators
 
 + [Formatting](#formatting)
-+ [Foreground Color](#foreground_color)
-+ [Background Color](#background_color)
++ [Foreground Color](#foreground-color)
++ [Background Color](#background-color)
 
 ### Formatting
 
