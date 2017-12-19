@@ -6,7 +6,7 @@ Thanks to [ANSI escape code](https://en.wikipedia.org/wiki/ANSI_escape_code#Colo
 
 ## How to use ?
 
-Basically, you put the color/format manipulators
+Basically, put the color/format manipulators before the text you want to color.
 
 ```c++
 #include <iostream>
