@@ -25,12 +25,15 @@
 #elif defined(TERM_WIN)
 #  include <io.h>
 #  include <windows.h>
+#  ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
+#    define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
+#  endif
 #endif
 
 #include <iostream>
+#include <typeinfo>
 #include <fstream>
 #include <sstream>
-#include <streambuf>
 #include <cstdio>
 
 namespace termclr {
