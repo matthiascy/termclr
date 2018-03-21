@@ -1,5 +1,5 @@
 #include <iostream>
-#include <cstdlib>
+#include <stdio.h>
 #include "../termclr.hpp"
 
 int main(int argc, char **argv)

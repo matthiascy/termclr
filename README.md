@@ -2,11 +2,11 @@
 
 `Termclr` is a header-only C++ library which provides a set of C++ stream manipulators to print colored text to terminal.
 
-Thanks to [ANSI escape code](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors), terminals can display colors and formatted texts, there is a detailed explanation [here](https://misc.flogisoft.com/bash/tip_colors_and_formatting). For Unix-like systems, escape codes are naturally supported in terminals, but for Windows, it works only when [virtual terminal processing](https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#Text_Formatting) is enabled. Depends on different type of terminals, some formatting codes may not work, see [terminals compatibility](https://misc.flogisoft.com/bash/tip_colors_and_formatting#Terminals-compatibility) for more infomation. On Windows, the only two supported formatting codes are `underline` and `inverse`(swaps foreground and background colors).
+Thanks to [ANSI escape code](https://en.wikipedia.org/wiki/ANSI_escape_code#Colors), terminals can display colors and formatted texts, there is a detailed explanation [here](https://misc.flogisoft.com/bash/tip_colors_and_formatting). For Unix-like systems, escape codes are naturally supported in terminals, but for Windows, it works only when [virtual terminal processing](https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#Text_Formatting) is enabled(only supported by Windows 10). Depends on different type of terminals, some formatting codes may not work, see [terminals compatibility](https://misc.flogisoft.com/bash/tip_colors_and_formatting#Terminals-compatibility) for more infomation. On Windows, the only two supported formatting codes are `underline` and `inverse`(swaps foreground and background colors).
 
 ## How to use ?
 
-Basically, you put the color/format manipulators
+Basically, put the color/format manipulators before the text you want to color.
 
 ```c++
 #include <iostream>
