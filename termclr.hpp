@@ -99,6 +99,7 @@ namespace termclr {
         else if ((&stream == &std::cerr) || (&stream == &std::clog))
           return static_cast<bool>(_isatty(_fileno(stderr)));
       #endif
+        return false;
     }
 
     #define COLOR_FUNCTION(COLOR)                         \
